@@ -6,8 +6,9 @@ define postgresql::user($ensure=present) {
 
     exec { "createuser $owner":
       command => "createuser --no-superuser --no-createdb --no-createrole ${owner}",
-      user => "postgres",
-      unless => $userexists,
+      user    => "postgres",
+      unless  => $userexists,
+      require => Class["postgresql::server"],
     }
 
   } elsif $ensure == 'absent' {
