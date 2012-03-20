@@ -1,5 +1,5 @@
-class postgresql::client {
-  package { "postgresql-client":
+class postgresql::client($version) {
+  package { "postgresql-client-${version}":
     ensure => present,
   }
 }

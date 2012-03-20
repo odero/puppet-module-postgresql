@@ -2,14 +2,22 @@ class postgresql::server($version="8.4",
                          $listen_addresses='localhost',
                          $max_connections=100,
                          $shared_buffers='24MB') {
-  include postgresql::client
+  class { 'postgresql::client': 
+    version => $version,
+  }
+
+  Class['postgresql::server'] -> Class['postgresql::client']
 
   $service_name = $operatingsystem ? {
     "Ubuntu" => "postgresql-${version}",
     default => "postgresql",
   }
 
-  package { postgresql:
+  $pkgname = $operatingsystem ? {
+    default => "postgresql-${version}",
+  }
+
+  package { "postgresql-${version}":
     ensure => present,
   }
 
@@ -22,13 +30,13 @@ class postgresql::server($version="8.4",
     path => "/etc/postgresql/${version}/main/pg_hba.conf",
     source => "puppet:///modules/postgresql/pg_hba.conf",
     mode => 640,
-    require => Package[postgresql],
+    require => Package[$pkgname],
   }
 
   file { "postgresql.conf":
     path => "/etc/postgresql/${version}/main/postgresql.conf",
     content => template("postgresql/postgresql.conf.erb"),
-    require => Package[postgresql],
+    require => Package[$pkgname],
   }
 
   service { $service_name:
@@ -36,7 +44,7 @@ class postgresql::server($version="8.4",
     enable => true,
     hasstatus => true,
     hasrestart => true,
-    subscribe => [Package["postgresql"],
+    subscribe => [Package[$pkgname],
                   File["pg_hba.conf"],
                   File["postgresql.conf"]],
   }
