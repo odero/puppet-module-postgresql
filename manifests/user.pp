@@ -4,19 +4,19 @@ define postgresql::user($ensure=present) {
 
   if $ensure == 'present' {
 
-    exec { "createuser $owner":
+    exec { "createuser ${owner}":
       command => "createuser --no-superuser --no-createdb --no-createrole ${owner}",
-      user    => "postgres",
+      user    => 'postgres',
       unless  => $userexists,
-      require => Class["postgresql::server"],
+      require => Class['postgresql::server'],
     }
 
   } elsif $ensure == 'absent' {
 
-    exec { "dropuser $owner":
+    exec { "dropuser ${owner}":
       command => "dropuser ${owner}",
-      user => "postgres",
-      onlyif => "$userexists && $user_owns_zero_databases",
+      user    => 'postgres',
+      onlyif  => "$userexists && $user_owns_zero_databases",
     }
   }
 }
