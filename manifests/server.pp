@@ -8,11 +8,6 @@ class postgresql::server($version='8.4',
 
   Class['postgresql::server'] -> Class['postgresql::client']
 
-  $service_name = $::operatingsystem ? {
-    'Ubuntu' => "postgresql-${version}",
-    default  => 'postgresql',
-  }
-
   $pkgname = $::operatingsystem ? {
     default => "postgresql-${version}",
   }
@@ -39,7 +34,7 @@ class postgresql::server($version='8.4',
     require => Package[$pkgname],
   }
 
-  service { $service_name:
+  service { "postgresql":
     ensure     => running,
     enable     => true,
     hasstatus  => true,
