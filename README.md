@@ -48,6 +48,7 @@ If you need language specific PostgreSQL modules include their class:
 
     include postgresql::python
     include postgresql::ruby
+    include postgresql::perl
 
 Creating a database is done with the `postgresql::database` resource. If
 the owner does not exist it is created:
